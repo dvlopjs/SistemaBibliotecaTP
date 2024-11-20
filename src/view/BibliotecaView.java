@@ -2,7 +2,6 @@ package view;
 
 import controller.BibliotecaController;
 import model.Libro;
-import model.LibroDAO;
 import model.Prestamo;
 
 import javax.swing.*;
@@ -40,13 +39,14 @@ public class BibliotecaView extends JFrame {
     private JButton actualizarTablaButton;
 
     // Componentes para préstamos
+    private JTextField estudianteField;
     private JSpinner fechaPrestamoSpinner;
     private JSpinner fechaDevolucionSpinner;
     private JButton registrarPrestamoButton;
     private JButton finalizarPrestamoButton;
     private JTable tablaPrestamos;
     private DefaultTableModel modeloTablaPrestamo = new DefaultTableModel(
-            new Object[]{"ID Préstamo", "Título", "Fecha Préstamo", "Fecha Devolución"},
+            new Object[]{"ID Préstamo", "Estudiante", "Título", "Fecha Préstamo", "Fecha Devolución"},
             0
     ) {
         @Override
@@ -157,22 +157,28 @@ public class BibliotecaView extends JFrame {
     }
 
     private JPanel createFormularioPrestamos() {
+
         JPanel prestamoPanel = new JPanel(new GridBagLayout());
         prestamoPanel.setBorder(BorderFactory.createTitledBorder("Registrar Préstamo"));
         GridBagConstraints gbc = new GridBagConstraints();
+
         gbc.insets = new Insets(5, 5, 5, 5);
 
         // Configuración de spinners
         configurarSpinnersFecha();
 
+
+        estudianteField = new JTextField(20);
+
         // Agregar componentes al panel
-        addFormField(prestamoPanel, "Fecha Préstamo:", fechaPrestamoSpinner, gbc, 0);
-        addFormField(prestamoPanel, "Fecha Devolución:", fechaDevolucionSpinner, gbc, 1);
+        addFormField(prestamoPanel, "Estudiante:", estudianteField, gbc, 0);
+        addFormField(prestamoPanel, "Fecha Préstamo:", fechaPrestamoSpinner, gbc, 1);
+        addFormField(prestamoPanel, "Fecha Devolución:", fechaDevolucionSpinner, gbc, 2);
 
         registrarPrestamoButton = new JButton("Registrar Préstamo");
         registrarPrestamoButton.addActionListener(e -> registrarPrestamo());
         gbc.gridx = 1;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         prestamoPanel.add(registrarPrestamoButton, gbc);
 
         return prestamoPanel;
@@ -253,6 +259,7 @@ public class BibliotecaView extends JFrame {
 
         Date fechaPrestamoDate = (Date) fechaPrestamoSpinner.getValue();
         Date fechaDevolucionDate = (Date) fechaDevolucionSpinner.getValue();
+        String estudiante = estudianteField.getText().trim();
 
 
         LocalDate fechaPrestamo = fechaPrestamoDate.toInstant()
@@ -264,6 +271,11 @@ public class BibliotecaView extends JFrame {
                 .toLocalDate();
 
         Libro libroSelected = controller.getLibroId(idLibro);
+
+        if(estudiante.isEmpty()){
+            mostrarError("El nombre del estudiante no puede estar vacío", "Error");
+            return;
+        }
 
         if (libroSelected.getEstado().equals("prestado")) {
             mostrarError("El libro ya se encuentra prestado.", "Error");
@@ -277,7 +289,7 @@ public class BibliotecaView extends JFrame {
 
 
 
-        if (controller.registrarPrestamo(idLibro, fechaPrestamo, fechaDevolucion)) {
+        if (controller.registrarPrestamo(idLibro, estudiante, fechaPrestamo, fechaDevolucion)) {
             mostrarMensaje("Préstamo registrado correctamente");
             actualizarTablaLibros();
             actualizarTablaPrestamos();
@@ -340,6 +352,7 @@ public class BibliotecaView extends JFrame {
 
             modeloTablaPrestamo.addRow(new Object[]{
                     prestamo.getIdPrestamo(),
+                    prestamo.getEstudiante(),
                     nombreLibro,
                     prestamo.getFechaPrestamo(),
                     prestamo.getFechaDevolucion()

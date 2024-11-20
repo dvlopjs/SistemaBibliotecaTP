@@ -32,11 +32,11 @@ public class BibliotecaController {
     }
 
     // Método para registrar un préstamo
-    public boolean registrarPrestamo(int idLibro, LocalDate fechaPrestamo, LocalDate fechaDevolucion) {
+    public boolean registrarPrestamo(int idLibro,String estudiante, LocalDate fechaPrestamo, LocalDate fechaDevolucion) {
         // Aquí se podría verificar si el libro está disponible antes de registrar el préstamo
         Libro libro = libroDAO.obtenerLibroPorId(idLibro);
         if (libro != null && libro.getEstado().equals("disponible")) {
-            if (prestamoDAO.registrarPrestamo(idLibro, fechaPrestamo, fechaDevolucion)) {
+            if (prestamoDAO.registrarPrestamo(idLibro, estudiante, fechaPrestamo, fechaDevolucion)) {
                 // Actualizamos el estado del libro a "prestado"
                 return libroDAO.actualizarEstadoLibro(idLibro, "prestado");
             }

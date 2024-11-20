@@ -4,13 +4,15 @@ import java.time.LocalDate;
 public class Prestamo {
     private int idPrestamo;
     private int idLibro;
+    private String estudiante;
     private String fechaPrestamo;
     private String fechaDevolucion;
 
     // Constructor para inicializar todos los campos
-    public Prestamo(int idPrestamo, int idLibro, String fechaPrestamo, String fechaDevolucion) {
+    public Prestamo(int idPrestamo, int idLibro,String estudiante, String fechaPrestamo, String fechaDevolucion) {
         this.idPrestamo = idPrestamo;
         this.idLibro = idLibro;
+        this.estudiante = estudiante;
         this.fechaPrestamo = fechaPrestamo;
         this.fechaDevolucion = fechaDevolucion;
     }
@@ -63,5 +65,13 @@ public class Prestamo {
                 ", fechaPrestamo=" + fechaPrestamo +
                 ", fechaDevolucion=" + fechaDevolucion +
                 '}';
+    }
+
+    public String getEstudiante() {
+        return estudiante;
+    }
+
+    public void setEstudiante(String estudiante) {
+        this.estudiante = estudiante;
     }
 }
