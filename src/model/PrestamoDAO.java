@@ -61,7 +61,7 @@ public class PrestamoDAO {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                // Crear un objeto Prestamo con los datos obtenidos
+
                 int id = resultSet.getInt("id_prestamo");
                 int idLibro = resultSet.getInt("id_libro");
                 String estudiante = resultSet.getString("estudiante");

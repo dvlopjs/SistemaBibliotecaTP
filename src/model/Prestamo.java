@@ -17,12 +17,6 @@ public class Prestamo {
         this.fechaDevolucion = fechaDevolucion;
     }
 
-    // Constructor sin `idPrestamo` (para agregar un nuevo préstamo, ya que `id_prestamo` es autoincremental)
-    public Prestamo(int idLibro, String fechaPrestamo, String fechaDevolucion) {
-        this.idLibro = idLibro;
-        this.fechaPrestamo = fechaPrestamo;
-        this.fechaDevolucion = fechaDevolucion;
-    }
 
     // Getters y setters
     public int getIdPrestamo() {
