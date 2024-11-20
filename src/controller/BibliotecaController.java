@@ -60,5 +60,5 @@ public class BibliotecaController {
         return libroDAO.obtenerLibroPorId(idLibro);
     }
 
-    // Otros métodos que puedas necesitar, como buscar libros, filtrar por estado, etc.
+
 }

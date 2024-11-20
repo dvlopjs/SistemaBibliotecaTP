@@ -279,18 +279,6 @@ public class BibliotecaView extends JFrame {
 
         if (controller.registrarPrestamo(idLibro, fechaPrestamo, fechaDevolucion)) {
             mostrarMensaje("Préstamo registrado correctamente");
-
-            // Agregar estas líneas para debug
-            System.out.println("Préstamos después de registrar nuevo:");
-
-            List<Prestamo> prestamos = controller.obtenerPrestamos();
-            for(Prestamo p : prestamos) {
-                System.out.println("ID Prestamo: " + p.getIdPrestamo() +
-                        ", ID Libro: " + p.getIdLibro() +
-                        ", Fecha Prestamo: " + p.getFechaPrestamo() +
-                        ", Fecha Devolución: " + p.getFechaDevolucion());
-            }
-
             actualizarTablaLibros();
             actualizarTablaPrestamos();
         } else {
@@ -306,7 +294,6 @@ public class BibliotecaView extends JFrame {
         }
 
         int idPrestamo = (int) tablaPrestamos.getValueAt(filaSeleccionada, 0);
-        System.out.println(idPrestamo + "ID PRESTAMO");
         if (controller.finalizarPrestamo(idPrestamo)) {
             mostrarMensaje("Préstamo finalizado correctamente");
             actualizarTablaPrestamos();
@@ -351,7 +338,6 @@ public class BibliotecaView extends JFrame {
         for (Prestamo prestamo : prestamos) {
             String nombreLibro = mapaLibros.get(prestamo.getIdLibro());
 
-            System.out.println("Agregando préstamo a la tabla: " + prestamo.getIdPrestamo());
             modeloTablaPrestamo.addRow(new Object[]{
                     prestamo.getIdPrestamo(),
                     nombreLibro,

@@ -1,8 +1,6 @@
 package model;
 import java.sql.*;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +15,7 @@ public class PrestamoDAO {
     // Método para registrar un nuevo préstamo
     public boolean registrarPrestamo(int idLibro, LocalDate fechaPrestamo, LocalDate fechaDevolucion) {
         String query = "INSERT INTO Prestamo (id_libro, fecha_prestamo, fecha_devolucion) VALUES (?, ?, ?)";
-        System.out.println("Fecha prestamo: " + fechaPrestamo);
-        System.out.println("Fecha Devolución: " + fechaDevolucion);
 
-        // Formatear las fechas al formato deseado
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String fechaPrestamoFormateada = fechaPrestamo.format(formatter);
         String fechaDevolucionFormateada = fechaDevolucion.format(formatter);
@@ -40,9 +35,7 @@ public class PrestamoDAO {
     public List<Prestamo> obtenerPrestamosActivos() {
         List<Prestamo> prestamos = new ArrayList<>();
         String query = "SELECT * FROM Prestamo";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-        //parsear a string y dsps string a localDate
         try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 Prestamo prestamo = new Prestamo(
