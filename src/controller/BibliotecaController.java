@@ -22,8 +22,8 @@ public class BibliotecaController {
     }
 
     // Método para obtener todos los libros
-    public List<Libro> obtenerLibros() {
-        return libroDAO.obtenerLibros();
+    public List<Libro> obtenerLibros(String filtroNombre, String filtroEstadoSeleccionado) {
+        return libroDAO.obtenerLibros(filtroNombre, filtroEstadoSeleccionado);
     }
 
     public List<Prestamo> obtenerPrestamos(){

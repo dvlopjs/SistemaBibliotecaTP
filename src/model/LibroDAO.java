@@ -2,13 +2,17 @@ package model;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class LibroDAO {
     private Connection connection;
 
     public LibroDAO(Connection connection) {
         this.connection = connection;
+
     }
+    private static final Logger LOGGER = Logger.getLogger(LibroDAO.class.getName());
+
 
     // Método para agregar un nuevo libro
     public boolean agregarLibro(Libro libro) {
@@ -38,20 +42,36 @@ public class LibroDAO {
         }
     }
 
-    // Método para obtener todos los libros
-    public List<Libro> obtenerLibros() {
+    public List<Libro> obtenerLibros(String nombreFiltro, String estadoFiltro) {
+        String query = "SELECT * FROM Libro WHERE 1=1";
+        if (nombreFiltro != null && !nombreFiltro.isEmpty()) {
+            query += " AND LOWER(titulo) LIKE ?";
+        }
+        if (estadoFiltro != null && !estadoFiltro.equals("Todos")) {
+            query += " AND estado = ?";
+        }
+
         List<Libro> libros = new ArrayList<>();
-        String query = "SELECT * FROM Libro";
-        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+
+            int paramIndex = 1;
+            if (nombreFiltro != null && !nombreFiltro.isEmpty()) {
+                stmt.setString(paramIndex++, "%" + nombreFiltro.toLowerCase() + "%");
+            }
+            if (estadoFiltro != null && !estadoFiltro.equals("Todos")) {
+                stmt.setString(paramIndex++, estadoFiltro.toLowerCase());
+            }
+
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Libro libro = new Libro(
+                libros.add(new Libro(
                         rs.getInt("id_libro"),
                         rs.getString("titulo"),
                         rs.getString("autor"),
                         rs.getString("genero"),
                         rs.getInt("anio"),
-                        rs.getString("estado"));
-                libros.add(libro);
+                        rs.getString("estado")
+                ));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -95,26 +115,5 @@ public class LibroDAO {
         }
     }
 
-    // Método para buscar libros por estado (disponible o prestado)
-    public List<Libro> obtenerLibrosPorEstado(String estado) {
-        List<Libro> libros = new ArrayList<>();
-        String query = "SELECT * FROM Libro WHERE estado = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, estado);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Libro libro = new Libro(
-                        rs.getString("titulo"),
-                        rs.getString("autor"),
-                        rs.getString("genero"),
-                        rs.getInt("anio"),
-                        rs.getString("estado")
-                );
-                libros.add(libro);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return libros;
-    }
+
 }

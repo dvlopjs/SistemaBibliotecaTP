@@ -10,9 +10,7 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class BibliotecaView extends JFrame {
     private final BibliotecaController controller;
@@ -29,6 +27,8 @@ public class BibliotecaView extends JFrame {
     private DefaultTableModel modeloTablaLibros;
     private JComboBox<String> filtroEstado;
     private JButton actualizarTablaButton;
+    private JTextField filtroNombreField;
+
 
     // Componentes para préstamos
     private JTextField estudianteField;
@@ -126,13 +126,19 @@ public class BibliotecaView extends JFrame {
     private JPanel createFiltrosPanel() {
         JPanel filtrosPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
+        filtroNombreField = new JTextField(15);
+
+        JButton buscarNombreButton = new JButton("Buscar");
+        buscarNombreButton.addActionListener(e -> actualizarTablaLibros());
+
+
         filtroEstado = new JComboBox<>(new String[]{"Todos", "Disponible", "Prestado"});
-        actualizarTablaButton = new JButton("Actualizar");
-        actualizarTablaButton.addActionListener(e -> actualizarTablaLibros());
+        filtrosPanel.add(new JLabel("Buscar por nombre:"));
+        filtrosPanel.add(filtroNombreField);
+        filtrosPanel.add(buscarNombreButton);
 
         filtrosPanel.add(new JLabel("Filtrar por estado:"));
         filtrosPanel.add(filtroEstado);
-        filtrosPanel.add(actualizarTablaButton);
 
         return filtrosPanel;
     }
@@ -308,13 +314,18 @@ public class BibliotecaView extends JFrame {
 
     private void actualizarTablaLibros() {
         modeloTablaLibros.setRowCount(0);
-        String filtro = (String) filtroEstado.getSelectedItem();
+        String filtroEstadoSeleccionado = (String) filtroEstado.getSelectedItem();
+        String filtroNombre = filtroNombreField.getText().trim().toLowerCase();
 
-        List<Libro> libros = controller.obtenerLibros();
+        List<Libro> libros = controller.obtenerLibros(filtroNombre, filtroEstadoSeleccionado );
         for (Libro libro : libros) {
-            if (filtro.equals("Todos") ||
-                    (filtro.equals("Disponible") && libro.getEstado().equals("disponible")) ||
-                    (filtro.equals("Prestado") && libro.getEstado().equals("prestado"))) {
+            boolean coincideEstado = filtroEstadoSeleccionado.equals("Todos") ||
+                    (filtroEstadoSeleccionado.equals("Disponible") && libro.getEstado().equalsIgnoreCase("disponible")) ||
+                    (filtroEstadoSeleccionado.equals("Prestado") && libro.getEstado().equalsIgnoreCase("prestado"));
+
+            boolean coincideNombre = filtroNombre.isEmpty() || libro.getTitulo().toLowerCase().contains(filtroNombre);
+
+            if (coincideEstado && coincideNombre) {
                 modeloTablaLibros.addRow(new Object[]{
                         libro.getIdLibro(),
                         libro.getTitulo(),
@@ -327,18 +338,12 @@ public class BibliotecaView extends JFrame {
         }
     }
 
+
     private void actualizarTablaPrestamos() {
         modeloTablaPrestamos.setRowCount(0);
         List<Prestamo> prestamos = controller.obtenerPrestamos();
-        List<Libro> libros = controller.obtenerLibros();
-
-        Map<Integer, String> mapaLibros = new HashMap<>();
-        for (Libro libro : libros) {
-            mapaLibros.put(libro.getIdLibro(), libro.getTitulo());
-        }
-
         for (Prestamo prestamo : prestamos) {
-            String nombreLibro = mapaLibros.get(prestamo.getIdLibro());
+            String nombreLibro = controller.getLibroId(prestamo.getIdLibro()).getTitulo();
             modeloTablaPrestamos.addRow(new Object[]{
                     prestamo.getIdPrestamo(),
                     prestamo.getEstudiante(),
