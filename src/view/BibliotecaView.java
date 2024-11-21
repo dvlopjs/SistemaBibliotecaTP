@@ -3,6 +3,7 @@ package view;
 import controller.BibliotecaController;
 import model.Libro;
 import model.Prestamo;
+import view.utils.ColorEstadoCellRender;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -29,6 +30,13 @@ public class BibliotecaView extends JFrame {
     private JButton actualizarTablaButton;
     private JTextField filtroNombreField;
 
+    private void configurarRenderizadoresTabla() {
+
+        int columnaEstadoIndex = 5;
+        tablaLibros.getColumnModel().getColumn(columnaEstadoIndex).setCellRenderer(new ColorEstadoCellRender());
+    }
+
+
 
     // Componentes para préstamos
     private JTextField estudianteField;
@@ -41,6 +49,7 @@ public class BibliotecaView extends JFrame {
 
     private static final String[] COLUMNAS_LIBROS = {"ID", "Título", "Autor", "Género", "Año", "Estado"};
     private static final String[] COLUMNAS_PRESTAMOS = {"ID Préstamo", "Estudiante", "Título", "Fecha Préstamo", "Fecha Devolución"};
+
 
     public BibliotecaView(BibliotecaController controller) {
         this.controller = controller;
@@ -113,6 +122,8 @@ public class BibliotecaView extends JFrame {
         };
         tablaLibros = new JTable(modeloTablaLibros);
         JScrollPane scrollPane = new JScrollPane(tablaLibros);
+
+        configurarRenderizadoresTabla();
 
         // Panel de filtros
         JPanel filtrosPanel = createFiltrosPanel();
@@ -290,6 +301,7 @@ public class BibliotecaView extends JFrame {
             mostrarMensaje("Préstamo registrado correctamente");
             actualizarTablaLibros();
             actualizarTablaPrestamos();
+            limpiarFormularioPrestamo();
         } else {
             mostrarError("Error al registrar el préstamo", "Error");
         }
@@ -359,6 +371,13 @@ public class BibliotecaView extends JFrame {
         autorField.setText("");
         generoField.setText("");
         anioField.setText("");
+        estudianteField.setText("");
+    }
+
+    private void limpiarFormularioPrestamo(){
+        fechaPrestamoSpinner.setValue(new Date());
+        fechaDevolucionSpinner.setValue(new Date());
+
         estudianteField.setText("");
     }
 
